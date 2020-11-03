@@ -21,18 +21,18 @@ double radius;
 void drawPoint() {
 	Mat tmp;
 
-	// ÁÖ¸ÔÀÏ ¶§ (¼Õ°¡¶ô °³¼ö 0°³) ±×¸®±â
+	// ì£¼ë¨¹ì¼ ë•Œ (ì†ê°€ë½ ê°œìˆ˜ 0ê°œ) ê·¸ë¦¬ê¸°
 	if (finger_count == 0) {
 		circle(drawing_mask, Point(center.x, center.y), 10, Scalar(0), -1);
 		cout << "Draw" << endl;
 	}
-	// °¡À§ÀÏ ¶§ (¼Õ°¡¶ô °³¼ö 2°³) Áö¿ì±â
+	// ê°€ìœ„ì¼ ë•Œ (ì†ê°€ë½ ê°œìˆ˜ 2ê°œ) ì§€ìš°ê¸°
 	if (finger_count == 2) {
 		circle(drawing_mask, Point(center.x, center.y), 20, Scalar(255), -1);
 		cout << "Erase" << endl;
 	}
 
-	// ±×¸²À» ±×¸°´Ù.
+	// ê·¸ë¦¼ì„ ê·¸ë¦°ë‹¤.
 	tmp = ROI.clone();
 	ROI = Scalar::all(0);
 	tmp.copyTo(ROI, drawing_mask);
@@ -40,7 +40,7 @@ void drawPoint() {
 
 
 void printText(Mat& ROI, Point center) {
-	// ÅØ½ºÆ® ¿ä¼Ò
+	// í…ìŠ¤íŠ¸ ìš”ì†Œ
 	string count = "finger:  ";
 	int fontFace = FONT_HERSHEY_SCRIPT_SIMPLEX;
 	double fontScale = 0.8;
@@ -48,24 +48,24 @@ void printText(Mat& ROI, Point center) {
 	int baseline = 0;
 	Size textSize = getTextSize(count, fontFace, fontScale, thickness, &baseline);
 
-	// ÅØ½ºÆ® ¼¾ÅÍ¸¦ ÁöÁ¤ÇÑ´Ù.
+	// í…ìŠ¤íŠ¸ ì„¼í„°ë¥¼ ì§€ì •í•œë‹¤.
 	Point textOrg1((center.x - textSize.width / 2.0), (center.y - textSize.height * 2.0));
 	Point textOrg2((center.x - textSize.width / 2.0), (center.y - textSize.height * 4.0));
 
-	// ÅØ½ºÆ®¸¦ Ãâ·ÂÇÑ´Ù.
+	// í…ìŠ¤íŠ¸ë¥¼ ì¶œë ¥í•œë‹¤.
 	putText(ROI, "(" + to_string(center.x) + "," + to_string(center.y) + ")", textOrg1, fontFace, fontScale, Scalar(0, 255, 0), thickness, 8);
 	putText(ROI, count + to_string(finger_count), textOrg2, fontFace, fontScale, Scalar(0, 0, 255), thickness, 8);
 }
 
 
 Point getHandCenter(const Mat& mask) {
-	Mat dst;  // °Å¸® º¯È¯ Çà·ÄÀ» ÀúÀåÇÒ º¯¼ö
-	int maxIdx[2];  // ÁÂÇ¥ °ªÀ» ¾ò¾î¿Ã ¹è¿­ (Çà, ¿­ ¼øÀ¸·Î ÀúÀå)
+	Mat dst;  // ê±°ë¦¬ ë³€í™˜ í–‰ë ¬ì„ ì €ì¥í•  ë³€ìˆ˜
+	int maxIdx[2];  // ì¢Œí‘œ ê°’ì„ ì–»ì–´ì˜¬ ë°°ì—´ (í–‰, ì—´ ìˆœìœ¼ë¡œ ì €ì¥)
 
-	// °Å¸® º¯È¯ Çà·ÄÀ» dst¿¡ ÀúÀåÇÑ´Ù. (°á°ú: CV_32SC1 Å¸ÀÔ)
+	// ê±°ë¦¬ ë³€í™˜ í–‰ë ¬ì„ dstì— ì €ì¥í•œë‹¤. (ê²°ê³¼: CV_32SC1 íƒ€ì…)
 	distanceTransform(mask, dst, DIST_L2, 5);
 
-	// °Å¸® º¯È¯ Çà·Ä¿¡¼­ °ª(°Å¸®)ÀÌ °¡Àå Å« ÇÈ¼¿ÀÇ ÁÂÇ¥¿Í °ªÀ» ¾ò¾î¿Â´Ù. (ÃÖ´ñ°ª¸¸ »ç¿ë)
+	// ê±°ë¦¬ ë³€í™˜ í–‰ë ¬ì—ì„œ ê°’(ê±°ë¦¬)ì´ ê°€ì¥ í° í”½ì…€ì˜ ì¢Œí‘œì™€ ê°’ì„ ì–»ì–´ì˜¨ë‹¤. (ìµœëŒ“ê°’ë§Œ ì‚¬ìš©)
 	minMaxIdx(dst, NULL, &radius, NULL, maxIdx, mask);
 
 	return Point(maxIdx[1], maxIdx[0]);
@@ -73,19 +73,19 @@ Point getHandCenter(const Mat& mask) {
 
 
 void getFingerCount(const Mat& mask, Point center, double radius, double scale) {
-	// ¼Õ°¡¶ô °³¼ö¸¦ ¼¼±â À§ÇÑ ¿øÀ» ±×¸°´Ù.
+	// ì†ê°€ë½ ê°œìˆ˜ë¥¼ ì„¸ê¸° ìœ„í•œ ì›ì„ ê·¸ë¦°ë‹¤.
 	Mat cImg(mask.size(), CV_8U, Scalar(0));
 	circle(cImg, center, radius * scale, Scalar(255));
 
-	// ¿øÀÇ ¿Ü°û¼±À» Ã£´Â´Ù.
+	// ì›ì˜ ì™¸ê³½ì„ ì„ ì°¾ëŠ”ë‹¤.
 	vector<vector<Point>> contours;
 	findContours(cImg, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
-	// ¿Ü°û¼±ÀÌ ¾øÀ¸¸é ¼ÕÀ» °ËÃâÇÏÁö ¾Ê´Â´Ù.
+	// ì™¸ê³½ì„ ì´ ì—†ìœ¼ë©´ ì†ì„ ê²€ì¶œí•˜ì§€ ì•ŠëŠ”ë‹¤.
 	if (contours.size() == 0)
 		return;
 
-	// ¿Ü°û¼±À» µû¶ó µ¹¸ç maskÀÇ °ªÀÌ 0¿¡¼­ 1·Î ¹Ù²î´Â ÁöÁ¡À» ¼¾´Ù.
+	// ì™¸ê³½ì„ ì„ ë”°ë¼ ëŒë©° maskì˜ ê°’ì´ 0ì—ì„œ 1ë¡œ ë°”ë€ŒëŠ” ì§€ì ì„ ì„¼ë‹¤.
 	int count = 0;
 	for (int i = 1; i < contours[0].size(); i++) {
 		Point p1 = contours[0][i - 1];
@@ -94,12 +94,12 @@ void getFingerCount(const Mat& mask, Point center, double radius, double scale) 
 			count++;
 	}
 
-	// ¼Õ¸ñ°ú ¸¸³ª´Â ÁöÁ¡ 1°³¸¦ Á¦¿ÜÇÑ´Ù.
+	// ì†ëª©ê³¼ ë§Œë‚˜ëŠ” ì§€ì  1ê°œë¥¼ ì œì™¸í•œë‹¤.
 	finger_count = count - 1;
 	if (finger_count < 0)
 		finger_count = 0;
 
-	// ¼Õ°¡¶ô °³¼ö¸¦ Ãâ·ÂÇÑ´Ù.
+	// ì†ê°€ë½ ê°œìˆ˜ë¥¼ ì¶œë ¥í•œë‹¤.
 	cout << "finger count: " << finger_count << endl;
 	printText(ROI, center);
 }
@@ -114,30 +114,29 @@ int main(int argc, char** argv)
 	int deviceID = 0;     // 0 = Open default camera
 	int apiID = CAP_ANY;  // 0 = Autodetect default API
 
-	// Ä«¸Ş¶ó¸¦ ¿¬´Ù.
+	// ì¹´ë©”ë¼ë¥¼ ì—°ë‹¤.
 	cap.open(deviceID + apiID);
 
-	// Ä«¸Ş¶ó°¡ À¯È¿ÇÑÁö È®ÀÎÇÑ´Ù.
+	// ì¹´ë©”ë¼ê°€ ìœ íš¨í•œì§€ í™•ì¸í•œë‹¤.
 	if (!cap.isOpened()) {
 		cerr << "ERROR! Unable to open camera\n";
 		return -1;
 	}
 
-	// ROI ¿µ¿ª¿¡ ±×¸²À» ±×¸®±â À§ÇÑ ¸¶½ºÅ©¸¦ ¼³Á¤ÇÑ´Ù.
-	cap.read(frame);
+	// ROI ì˜ì—­ì— ê·¸ë¦¼ì„ ê·¸ë¦¬ê¸° ìœ„í•œ ë§ˆìŠ¤í¬ë¥¼ ì„¤ì •í•œë‹¤.
 	drawing_mask = Mat(frame.rows, frame.cols / 2, CV_8UC1, Scalar(255));
 
 	while (true) {
-		// µğ¹ÙÀÌ½º·ÎºÎÅÍ ¿µ»óÀ» ÀĞ¾î frame¿¡ ³Ö´Â´Ù.
+		// ë””ë°”ì´ìŠ¤ë¡œë¶€í„° ì˜ìƒì„ ì½ì–´ frameì— ë„£ëŠ”ë‹¤.
 		cap.read(frame);
 
-		// ¿µ»óÀÌ À¯È¿ÇÑÁö È®ÀÎÇÑ´Ù.
+		// ì˜ìƒì´ ìœ íš¨í•œì§€ í™•ì¸í•œë‹¤.
 		if (frame.empty()) {
 			cerr << "ERROR! blank frame grabbed\n";
 			break;
 		}
 
-		// ¼ÕÀ» °ËÃâÇÒ ROI ¿µ¿ªÀ» ÁöÁ¤ÇÑ´Ù.
+		// ì†ì„ ê²€ì¶œí•  ROI ì˜ì—­ì„ ì§€ì •í•œë‹¤.
 		part.x = part.y = 0;
 		part.height = frame.rows;
 		part.width = frame.cols / 2;
@@ -146,29 +145,29 @@ int main(int argc, char** argv)
 
 		// Hand Gesture Recognition --------------------
 
-		// ROI ¿µ¿ªÀ» YCrCb ¿µ»óÀ¸·Î º¯È¯ÇÑ´Ù.
+		// ROI ì˜ì—­ì„ YCrCb ì˜ìƒìœ¼ë¡œ ë³€í™˜í•œë‹¤.
 		cvtColor(ROI, ycrcb, COLOR_BGR2YCrCb);
 		split(ycrcb, channels);
 		//imshow("ycrcb", ycrcb);
 
-		// ÇÇºÎ ¿µ¿ªÀ» °ËÃâÇÑ´Ù. (133 <= Cr <= 173, 77 <= Cb <= 127)
+		// í”¼ë¶€ ì˜ì—­ì„ ê²€ì¶œí•œë‹¤. (133 <= Cr <= 173, 77 <= Cb <= 127)
 		inRange(ycrcb, Scalar(0, 133, 77), Scalar(255, 173, 127), skin_area);
 		//imshow("skin_area", skin_area);
 
-		// ¼ÕÀÇ Áß½ÉÀ» Ã£´Â´Ù.
+		// ì†ì˜ ì¤‘ì‹¬ì„ ì°¾ëŠ”ë‹¤.
 		center = getHandCenter(skin_area);
 		circle(ROI, center, 2, Scalar(0, 255, 0), -1);
 		circle(ROI, center, (int)(radius * 2.0), Scalar(255, 0, 0), 2);
 
-		// ¿­¸² ¿¬»êÀ» Àû¿ëÇÑ´Ù.
+		// ì—´ë¦¼ ì—°ì‚°ì„ ì ìš©í•œë‹¤.
 		Mat element9(9, 9, CV_8U, Scalar(1));
 		morphologyEx(skin_area, skin_area, MORPH_OPEN, element9);
 		//imshow("opening", skin_area);
 
-		// ¼Õ°¡¶ô °³¼ö¸¦ ±¸ÇÑ´Ù.
+		// ì†ê°€ë½ ê°œìˆ˜ë¥¼ êµ¬í•œë‹¤.
 		getFingerCount(skin_area, center, radius, 2.0);
 
-		// ¸¶¿ì½º Æ÷ÀÎÅÍ°¡ ¼ÕÀÇ Áß½ÉÀ» ÃßÀûÇÑ´Ù.
+		// ë§ˆìš°ìŠ¤ í¬ì¸í„°ê°€ ì†ì˜ ì¤‘ì‹¬ì„ ì¶”ì í•œë‹¤.
 		namedWindow("Live", WINDOW_NORMAL);
 		HWND hWnd = FindWindow(NULL, L"Live");
 		mouse_pointer.x = center.x;
@@ -176,10 +175,10 @@ int main(int argc, char** argv)
 		ClientToScreen(hWnd, &mouse_pointer);
 		SetCursorPos(mouse_pointer.x, mouse_pointer.y);
 
-		// ¼ÕÀ» ÀÌ¿ëÇØ¼­ ±×¸²À» ±×¸°´Ù.
+		// ì†ì„ ì´ìš©í•´ì„œ ê·¸ë¦¼ì„ ê·¸ë¦°ë‹¤.
 		drawPoint();
 
-		// ¿µ»óÀ» ½Ç½Ã°£À¸·Î Ãâ·ÂÇÑ´Ù.
+		// ì˜ìƒì„ ì‹¤ì‹œê°„ìœ¼ë¡œ ì¶œë ¥í•œë‹¤.
 		//imshow("ROI", ROI);
 		imshow("Live", frame);
 
